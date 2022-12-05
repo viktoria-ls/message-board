@@ -2,26 +2,19 @@ import socket
 import json
 
 host_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-host = socket.gethostname()
-port = 2468
+host = "127.0.0.1"
+port = 12345
 buffer_size = 1024
 host_sock.bind((host, port))
-
-commands_params = {
-    "join": [],
-    "register": ["handle"],
-    "all": ["message"],
-    "msg": ["handle", "message"]
-}
 
 users = {}
 
 def send_response(message, ip_port):
     if message["command"] == "msg":
-        host_sock.sendto(str.encode(json.dumps(message)), users[message[handle]])
+        host_sock.sendto(str.encode(json.dumps(message)), users[message["handle"]])
         host_sock.sendto(str.encode(json.dumps(message)), ip_port)
     elif message["command"] == "all":
-        for add in users.values():
+        for add in list(users.values()):
             host_sock.sendto(str.encode(json.dumps(message)), add)
     else:
         host_sock.sendto(str.encode(json.dumps(message)), ip_port)
@@ -33,19 +26,31 @@ while running:
     data = json.loads(data.decode())
     print(data)
 
-    msg_to_client = data
+    msg_to_client = {}
+    command = data["command"]
+    msg_to_client["command"] = command
 
-    if data["command"] == "register":
+    if command == "register":
         if data["handle"] in list(users.keys()):
             msg_to_client["command"] = "error"
             msg_to_client["message"] = "Error: Registration failed. Handle or alias already exists."
         else:
             users[data["handle"]] = client_addr
-    elif data["command"] == "msg":
-        if data["handle"] not in list(users.keys()):
+            msg_to_client["handle"] = data["handle"]
+    elif command == "msg" or command == "all":
+        if client_addr not in list(users.values()):
+            msg_to_client["command"] = "error"
+            msg_to_client["message"] = "Error: You must be registered with a handle or alias first."
+        elif command == "msg" and data["handle"] not in list(users.keys()):
             msg_to_client["command"] = "error"
             msg_to_client["message"] = "Error: Handle or alias not found."
-    elif data["command"] == "all":
-        msg_to_client["sender"] = list(users.keys())[list(users.values()).index(client_addr)]
-
+        else:
+            if command == "msg":
+                msg_to_client["handle"] = data["handle"]
+            msg_to_client["message"] = data["message"]
+            msg_to_client["sender"] = list(users.keys())[list(users.values()).index(client_addr)]
+    elif command == "leave":
+        if client_addr in list(users.values()):
+            users.pop(list(users.keys())[list(users.values()).index(client_addr)])
+ 
     send_response(msg_to_client, client_addr)
