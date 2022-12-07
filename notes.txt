@@ -24,6 +24,12 @@ handle_reply()
 --------------------------
 To make:
 /ch <channel_name> - makes a channel with yourself in it
-/add <channel_name> <handle1> <handles> - adds people to channel
+/add <channel_name> <handle1> <handles> - adds people to channel; if already there, no need error message
 alter /msg <handle> or <channel_name> - sends message to all people in channel
 /leave_ch <channel_name> - leave channel
+
+/stats
+- server ip and port
+- your handle
+- how many people in server
+- your current channels and how many in them

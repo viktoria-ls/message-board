@@ -20,7 +20,11 @@ commands_params = {
     "register": ["handle"],
     "all": ["message"],
     "msg": ["handle", "message"],
-    "?": []
+    "ch": ["channel"],
+    "add": ["channel", "handles"],
+    "msg_ch": ["channel", "message"],
+    "leave_ch": ["channel"],
+    "?": [],
 }
 
 def handle_reply():
@@ -60,6 +64,14 @@ def handle_reply():
                         print(f"[To {data['handle']}]: {data['message']}")
                     else:
                         print(f"[From {data['sender']}]: {data['message']}")
+                elif command == "ch":
+                    print(f"You are now a member of channel [{data['channel']}]!")
+                elif command == "msg_ch":
+                    print(f"[{data['sender']} to {data['channel']}]: {data['message']}")
+                elif command == "add":
+                    print(f"You have been added to channel [{data['channel']}]!")
+                elif command == "leave_ch":
+                    print(f"You have left channel [{data['channel']}].")
                 elif command == "error":
                     print(data["message"])
 
@@ -117,7 +129,7 @@ def get_input():
             if server_ip == None:
                 handle = ""
                 print("Error: Disconnection failed. Please connect to the server first.")
-            elif len(params) > 1:
+            elif len(params) >= 1:
                 print("Error: Command parameters do not match or is not allowed.")
             else:
                 send_command(msg_to_server)
@@ -135,6 +147,12 @@ def get_input():
             msg_to_server["message"] = " ".join(params)
         elif command == "register" and handle != "":
             print(f'Error: You are already registered under the handle/alias, "{handle}".')
+        elif command == "add" and len(params) >= 2:
+            msg_to_server["channel"] = params[0]
+            msg_to_server["handles"] = " ".join(params[1:])
+        elif command == "msg_ch" and len(params) >= 2:
+            msg_to_server["channel"] = params[0]
+            msg_to_server["message"] = " ".join(params[1:])
 
         else:
             # Number of inputted parameters is not allowable
@@ -151,10 +169,10 @@ def get_input():
                 else:
                     server_ip = params[0]
                     server_port = params[1]
-            elif command == "register":
-                if handle != "":
-                    print(f'Error: You are already registered under the handle/alias, "{handle}".')
-                    continue
+            # elif command == "register":
+            #     if handle != "":
+            #         print(f'Error: You are already registered under the handle/alias, "{handle}".')
+            #         continue
 
         send_command(msg_to_server)
 
@@ -165,9 +183,15 @@ def get_commands():
     /register <handle>
     /all <message>
     /msg <handle> <message>
+
+    /ch <channel>
+    /add <handle_1> <handle_2> ...
+    /leave_ch <channel>
+    /msg <channel> <message>
+
     /?
     
-    Emojis:
+    Emojis (Try typing these when you use /all and /msg):
     [happy]
     [laugh]
     [sad]
