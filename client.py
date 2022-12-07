@@ -27,6 +27,8 @@ commands_params = {
     "?": [],
 }
 
+print("Welcome to the Message Board System!")
+
 def handle_reply():
     global server_ip
     global server_port
@@ -47,7 +49,6 @@ def handle_reply():
                 
                 data, server_addr = messages.get()
                 data = json.loads(data.decode())
-                # print(f"RECEIVING >> {data}")
                 command = data["command"]
 
                 if command == "join":
@@ -80,7 +81,6 @@ def send_command(message):
     global server_port
 
     encoded_msg = str.encode(json.dumps(message))
-    # print(f"SENDING >> {encoded_msg}")
 
     try:
         server_port = int(server_port)
@@ -147,6 +147,7 @@ def get_input():
             msg_to_server["message"] = " ".join(params)
         elif command == "register" and handle != "":
             print(f'Error: You are already registered under the handle/alias, "{handle}".')
+            continue
         elif command == "add" and len(params) >= 2:
             msg_to_server["channel"] = params[0]
             msg_to_server["handles"] = " ".join(params[1:])
@@ -169,10 +170,6 @@ def get_input():
                 else:
                     server_ip = params[0]
                     server_port = params[1]
-            # elif command == "register":
-            #     if handle != "":
-            #         print(f'Error: You are already registered under the handle/alias, "{handle}".')
-            #         continue
 
         send_command(msg_to_server)
 
@@ -191,7 +188,7 @@ def get_commands():
 
     /?
     
-    Emojis (Try typing these when you use /all and /msg):
+    Emojis (Try typing these when you use /all, /msg, or /msg_ch):
     [happy]
     [laugh]
     [sad]

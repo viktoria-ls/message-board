@@ -24,6 +24,8 @@ emojis = {
     "[wave]": "\U0001F44B",
 }
 
+print(f"Server running at {ip}:{port}!")
+
 def send_response():
     while True:
         while not messages.empty():
