@@ -1,0 +1,29 @@
+/join 127.0.0.1 12345
+SERVER
+receive()
+- listen for client
+- parse input
+- add to messages
+
+respond()
+- gets each message
+- creates reply
+- sends to client
+-------------------------
+CLIENT - idt this needs a queue anymore, maybe idk
+get_input()
+- listen for user input
+- parse input
+- creates reply
+- sends to server (send_command)
+
+handle_reply()
+- listens for server
+- parse input
+- 
+--------------------------
+To make:
+/ch <channel_name> - makes a channel with yourself in it
+/add <channel_name> <handle1> <handles> - adds people to channel
+alter /msg <handle> or <channel_name> - sends message to all people in channel
+/leave_ch <channel_name> - leave channel
